@@ -76,14 +76,17 @@ public class CriminalController {
         processFormData(criminalDetailsDTO);
 //        System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
 
-        List<Criminal> foundList = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
-        Set<Criminal> foundSet = criminalService.searchCriminalsByCriminalInfoStrict(criminalDTO).stream()
+        List<Criminal> foundCriminalsByAttrs = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
+        List<Criminal> foundCriminalsByInfo = criminalService.searchCriminalsByCriminalInfoStrict(criminalDTO).stream()
                 .map(criminalCriminalDTOMapper::toEntity)
-                .collect(Collectors.toSet());
-//        dtoSet.removeAll(foundDtoList);
-        List<Criminal> intersection = foundList.stream()
-                .filter(foundDto -> foundSet.stream()
-                        .anyMatch(criminalDto -> Objects.equals(criminalDto.getId(), foundDto.getId())))
+                .collect(Collectors.toList());
+
+        System.out.println("Attrs: "+foundCriminalsByAttrs);
+        System.out.println("Info: "+foundCriminalsByInfo);
+
+        List<Criminal> intersection = foundCriminalsByAttrs.stream()
+                .filter(crByAttr -> foundCriminalsByInfo.stream()
+                        .anyMatch(crByInfo -> Objects.equals(crByInfo.getId(), crByAttr.getId())))
                 .collect(Collectors.toList());
 
         model.addAttribute("criminals", intersection);
