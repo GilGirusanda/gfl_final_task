@@ -71,14 +71,14 @@ public interface CriminalDetailsRepository extends JpaRepository<CriminalDetails
             @Param("citizenship") String citizenship
     );
 
-    @Query(nativeQuery = true, value = "SELECT * FROM crim_details_crosstab(:eyeColor, :hairColor, :height, :birthPlace, :birthDate, :lastResidence, :citizenship)")
-    List<CriminalDetailsDTO> findByAttributesFunc(
-            @Param("eyeColor") String eyeColor,
-            @Param("hairColor") String hairColor,
-            @Param("height") String height,
-            @Param("birthPlace") String birthPlace,
-            @Param("birthDate") String birthDate,
-            @Param("lastResidence") String lastResidence,
-            @Param("citizenship") String citizenship
-    );
+//    @Query(nativeQuery = true, value = "SELECT * FROM findCriminalDetailsFunc(:eyeColor, :hairColor, :height, :birthPlace, :birthDate, :lastResidence, :citizenship)")
+//    List<CriminalDetailsDTO> findByAttributesFunc(
+//            @Param("eyeColor") String eyeColor,
+//            @Param("hairColor") String hairColor,
+//            @Param("height") String height,
+//            @Param("birthPlace") String birthPlace,
+//            @Param("birthDate") String birthDate,
+//            @Param("lastResidence") String lastResidence,
+//            @Param("citizenship") String citizenship
+//    );
 }

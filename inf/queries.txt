@@ -345,3 +345,169 @@ WHERE
     CAST(NULL AS varchar) IS NULL
         OR ct.CITIZENSHIP = CAST(NULL AS varchar)
     );
+
+
+
+
+
+
+
+
+
+-- PREPARE findCriminalDetailsPlan (varchar, varchar, varchar, varchar, varchar, varchar, varchar) AS
+--     SELECT
+--         ct.rowid AS criminal_id,
+--         ct.EYE_COLOR,
+--         ct.HAIR_COLOR,
+--         ct.HEIGHT,
+--         ct.BIRTH_PLACE,
+--         TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') AS BIRTH_DATE,
+--         ct.LAST_RESIDENCE,
+--         ct.CITIZENSHIP
+--     FROM
+--         crosstab(
+--                 'SELECT criminal_id, attribute_type, attribute_value FROM criminal_details ORDER BY 1, 2',
+--                 $$VALUES ('EYE_COLOR'), ('HAIR_COLOR'), ('HEIGHT'), ('BIRTH_PLACE'), ('BIRTH_DATE'), ('LAST_RESIDENCE'), ('CITIZENSHIP')$$
+--         ) AS ct(
+--                 rowid bigint,
+--                 EYE_COLOR varchar,
+--                 HAIR_COLOR varchar,
+--                 HEIGHT varchar,
+--                 BIRTH_PLACE varchar,
+--                 BIRTH_DATE varchar,
+--                 LAST_RESIDENCE varchar,
+--                 CITIZENSHIP varchar
+--             )
+--     WHERE ($1 IS NULL OR ct.EYE_COLOR = $1)
+--       AND ($2::varchar IS NULL OR ct.HAIR_COLOR = $2)
+--       AND ($3::varchar IS NULL OR ct.HEIGHT = $3)
+--       AND ($4::varchar IS NULL OR ct.BIRTH_PLACE = $4)
+--       AND ($5::timestamp IS NULL OR TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') = TO_TIMESTAMP($5, 'YYYY-MM-DD'))
+--       AND ($6::varchar IS NULL OR ct.LAST_RESIDENCE = $6)
+--       AND ($7::varchar IS NULL OR ct.CITIZENSHIP = $7);
+--
+-- EXECUTE findCriminalDetailsPlan('green', null, null, null, null, null, null);
+
+
+
+
+
+
+
+
+
+
+-------------------- FUNCTION ---------------------------
+CREATE OR REPLACE FUNCTION findCriminalDetailsFunc(
+    IN p_eyeColor VARCHAR,
+    IN p_hairColor VARCHAR,
+    IN p_height VARCHAR,
+    IN p_birthPlace VARCHAR,
+    IN p_birthDate VARCHAR,
+    IN p_lastResidence VARCHAR,
+    IN p_citizenship VARCHAR
+) RETURNS TABLE (
+    criminal_id BIGINT,
+    EYE_COLOR VARCHAR,
+    HAIR_COLOR VARCHAR,
+    HEIGHT VARCHAR,
+    BIRTH_PLACE VARCHAR,
+    BIRTH_DATE TIMESTAMP WITHOUT TIME ZONE,
+    LAST_RESIDENCE VARCHAR,
+    CITIZENSHIP VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        ct.rowid AS criminal_id,
+        ct.EYE_COLOR,
+        ct.HAIR_COLOR,
+        ct.HEIGHT,
+        ct.BIRTH_PLACE,
+        TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') AS BIRTH_DATE,
+        ct.LAST_RESIDENCE,
+        ct.CITIZENSHIP
+    FROM
+        crosstab(
+            'SELECT criminal_id, attribute_type, attribute_value FROM criminal_details ORDER BY 1, 2',
+            'SELECT unnest(ARRAY[' || quote_literal(p_eyeColor) || ', ' || quote_literal(p_hairColor) || ', ' || quote_literal(p_height) || ', ' || quote_literal(p_birthPlace) || ', ' || quote_literal(p_birthDate) || ', ' || quote_literal(p_lastResidence) || ', ' || quote_literal(p_citizenship) || '])'
+        ) AS ct(
+            rowid BIGINT,
+            EYE_COLOR VARCHAR,
+            HAIR_COLOR VARCHAR,
+            HEIGHT VARCHAR,
+            BIRTH_PLACE VARCHAR,
+            BIRTH_DATE VARCHAR,
+            LAST_RESIDENCE VARCHAR,
+            CITIZENSHIP VARCHAR
+        )
+    WHERE
+        (p_eyeColor IS NULL OR ct.EYE_COLOR = p_eyeColor) AND
+        (p_hairColor IS NULL OR ct.HAIR_COLOR = p_hairColor) AND
+        (p_height IS NULL OR ct.HEIGHT = p_height) AND
+        (p_birthPlace IS NULL OR ct.BIRTH_PLACE = p_birthPlace) AND
+        (p_birthDate IS NULL OR TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') = TO_TIMESTAMP(p_birthDate, 'YYYY-MM-DD')) AND
+        (p_lastResidence IS NULL OR ct.LAST_RESIDENCE = p_lastResidence) AND
+        (p_citizenship IS NULL OR ct.CITIZENSHIP = p_citizenship);
+END;
+$$ LANGUAGE plpgsql;
+
+select * from findCriminalDetailsFunc('green', null, null, null, null, null, null);
+
+---------------------------------------------------------- FINAL ----------------------------
+CREATE OR REPLACE FUNCTION findCriminalDetailsFunc(
+    IN p_eyeColor VARCHAR,
+    IN p_hairColor VARCHAR,
+    IN p_height VARCHAR,
+    IN p_birthPlace VARCHAR,
+    IN p_birthDate VARCHAR,
+    IN p_lastResidence VARCHAR,
+    IN p_citizenship VARCHAR
+) RETURNS TABLE (
+    criminal_id BIGINT,
+    EYE_COLOR VARCHAR,
+    HAIR_COLOR VARCHAR,
+    HEIGHT VARCHAR,
+    BIRTH_PLACE VARCHAR,
+    BIRTH_DATE TIMESTAMP,
+    LAST_RESIDENCE VARCHAR,
+    CITIZENSHIP VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        ct.rowid AS criminal_id,
+        ct.EYE_COLOR,
+        ct.HAIR_COLOR,
+        ct.HEIGHT,
+        ct.BIRTH_PLACE,
+        ct.BIRTH_DATE::TIMESTAMP WITHOUT TIME ZONE AS BIRTH_DATE,
+        ct.LAST_RESIDENCE,
+        ct.CITIZENSHIP
+    FROM
+        crosstab(
+            'SELECT criminal_id, attribute_type, attribute_value FROM criminal_details ORDER BY 1, 2',
+            'SELECT unnest(ARRAY[' || quote_literal(p_eyeColor) || ', ' || quote_literal(p_hairColor) || ', ' || quote_literal(p_height) || ', ' || quote_literal(p_birthPlace) || ', ' || quote_literal(p_birthDate) || ', ' || quote_literal(p_lastResidence) || ', ' || quote_literal(p_citizenship) || '])'
+        ) AS ct(
+            rowid BIGINT,
+            EYE_COLOR VARCHAR,
+            HAIR_COLOR VARCHAR,
+            HEIGHT VARCHAR,
+            BIRTH_PLACE VARCHAR,
+            BIRTH_DATE VARCHAR,
+            LAST_RESIDENCE VARCHAR,
+            CITIZENSHIP VARCHAR
+        )
+    WHERE
+        (p_eyeColor IS NULL OR ct.EYE_COLOR = p_eyeColor) AND
+        (p_hairColor IS NULL OR ct.HAIR_COLOR = p_hairColor) AND
+        (p_height IS NULL OR ct.HEIGHT = p_height) AND
+        (p_birthPlace IS NULL OR ct.BIRTH_PLACE = p_birthPlace) AND
+        (p_birthDate IS NULL OR TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') = TO_TIMESTAMP(p_birthDate, 'YYYY-MM-DD')) AND
+        (p_lastResidence IS NULL OR ct.LAST_RESIDENCE = p_lastResidence) AND
+        (p_citizenship IS NULL OR ct.CITIZENSHIP = p_citizenship);
+END;
+$$ LANGUAGE plpgsql;
+
+
+
