@@ -68,10 +68,33 @@ public class CriminalController {
     public String searchCriminals(@ModelAttribute CriminalDetailsDTO criminalDetailsDTO,
                                   Model model) {
 
+        processFormData(criminalDetailsDTO);
         System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
 
         model.addAttribute("criminals", criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
         return "search_panel";
+    }
+
+    private void processFormData(CriminalDetailsDTO dto) {
+        // Check each field and replace blank strings with null
+        if (dto.getEyeColor() != null && dto.getEyeColor().isEmpty()) {
+            dto.setEyeColor(null);
+        }
+        if (dto.getHairColor() != null && dto.getHairColor().isEmpty()) {
+            dto.setHairColor(null);
+        }
+        if (dto.getHeight() != null && dto.getHeight().isEmpty()) {
+            dto.setHeight(null);
+        }
+        if (dto.getBirthPlace() != null && dto.getBirthPlace().isEmpty()) {
+            dto.setBirthPlace(null);
+        }
+        if (dto.getLastResidence() != null && dto.getLastResidence().isEmpty()) {
+            dto.setLastResidence(null);
+        }
+        if (dto.getCitizenship() != null && dto.getCitizenship().isEmpty()) {
+            dto.setCitizenship(null);
+        }
     }
 
     // Add new criminal

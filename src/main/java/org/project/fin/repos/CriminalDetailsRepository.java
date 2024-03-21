@@ -60,8 +60,12 @@ public interface CriminalDetailsRepository extends JpaRepository<CriminalDetails
 //            @Param("citizenship") String citizenship
 //    );
 
+
+
+
+    //Tuple
     @Query(name="findCriminalsByAttributes_Named_Query", nativeQuery = true)
-    List<Tuple> findCriminals_by_Attr_Crosstab_Named_2(
+    List<CriminalDetailsDTO> findCriminals_by_Attr_Crosstab_Named_2(
             @Param("eyeColor") String eyeColor,
             @Param("hairColor") String hairColor,
             @Param("height") String height,
@@ -70,6 +74,16 @@ public interface CriminalDetailsRepository extends JpaRepository<CriminalDetails
             @Param("lastResidence") String lastResidence,
             @Param("citizenship") String citizenship
     );
+
+
+
+
+
+
+
+
+
+
 
 //    @Query(nativeQuery = true, value = "SELECT * FROM findCriminalDetailsFunc(:eyeColor, :hairColor, :height, :birthPlace, :birthDate, :lastResidence, :citizenship)")
 //    List<CriminalDetailsDTO> findByAttributesFunc(

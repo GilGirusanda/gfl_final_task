@@ -277,27 +277,49 @@ public class CriminalService {
 //                .collect(Collectors.toList());
 //        System.out.println("filteredCriminalIds: "+filteredCriminalIds);
 
+
+
+//        List<CriminalDetailsDTO> cdDTOs = criminalDetailsRepository.findCriminals_by_Attr_Crosstab_Named_2(
+//                        null != criminalDetailsDTO.getEyeColor() ? criminalDetailsDTO.getEyeColor(): null,
+//                        criminalDetailsDTO.getHairColor(),
+//                        criminalDetailsDTO.getHeight(),
+//                        criminalDetailsDTO.getBirthPlace(),
+//                        formattedBirthDate,
+//                        criminalDetailsDTO.getLastResidence(),
+//                        criminalDetailsDTO.getCitizenship()
+//                ).stream()
+
         List<CriminalDetailsDTO> cdDTOs = criminalDetailsRepository.findCriminals_by_Attr_Crosstab_Named_2(
-                        criminalDetailsDTO.getEyeColor(),
-                        criminalDetailsDTO.getHairColor(),
-                        criminalDetailsDTO.getHeight(),
-                        criminalDetailsDTO.getBirthPlace(),
-                        formattedBirthDate,
-                        criminalDetailsDTO.getLastResidence(),
-                        criminalDetailsDTO.getCitizenship()
-                ).stream()
-                .map(cdDTO -> new CriminalDetailsDTO(
-                        cdDTO.get(0, Long.class),
-                        cdDTO.get(1, String.class),
-                        cdDTO.get(2, String.class),
-                        cdDTO.get(3, String.class),
-                        cdDTO.get(4, String.class),
-                        cdDTO.get(5, LocalDate.class),
-                        cdDTO.get(6, String.class),
-                        cdDTO.get(7, String.class)
-                        )
-                )
-                .collect(Collectors.toList());
+                null != criminalDetailsDTO.getEyeColor() ? criminalDetailsDTO.getEyeColor(): null,
+                null != criminalDetailsDTO.getHairColor() ? criminalDetailsDTO.getHairColor() : null,
+                null != criminalDetailsDTO.getHeight() ? criminalDetailsDTO.getHeight() : null,
+                null != criminalDetailsDTO.getBirthPlace() ? criminalDetailsDTO.getBirthPlace() : null,
+                formattedBirthDate,
+                null != criminalDetailsDTO.getLastResidence() ? criminalDetailsDTO.getLastResidence() : null,
+                null != criminalDetailsDTO.getCitizenship() ? criminalDetailsDTO.getCitizenship() : null
+        );
+//        List<Tuple> cdTuples = criminalDetailsRepository.findCriminals_by_Attr_Crosstab_Named_2(
+//                        null != criminalDetailsDTO.getEyeColor() ? criminalDetailsDTO.getEyeColor(): null,
+//                        null != criminalDetailsDTO.getHairColor() ? criminalDetailsDTO.getHairColor() : null,
+//                        null != criminalDetailsDTO.getHeight() ? criminalDetailsDTO.getHeight() : null,
+//                        null != criminalDetailsDTO.getBirthPlace() ? criminalDetailsDTO.getBirthPlace() : null,
+//                        formattedBirthDate,
+//                        null != criminalDetailsDTO.getLastResidence() ? criminalDetailsDTO.getLastResidence() : null,
+//                        null != criminalDetailsDTO.getCitizenship() ? criminalDetailsDTO.getCitizenship() : null
+//                );
+//        List<CriminalDetailsDTO> cdDTOs = cdTuples.stream()
+//                .map(cdTuple -> new CriminalDetailsDTO(
+//                        cdTuple.get(0, Long.class),
+//                        cdTuple.get(1, String.class),
+//                        cdTuple.get(2, String.class),
+//                        cdTuple.get(3, String.class),
+//                        cdTuple.get(4, String.class),
+//                        cdTuple.get(5, LocalDate.class),
+//                        cdTuple.get(6, String.class),
+//                        cdTuple.get(7, String.class)
+//                        )
+//                )
+//                .collect(Collectors.toList());
 
 //        List<CriminalDetailsDTO> cdDTOs = findByAttributes(criminalDetailsDTO);
 
