@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminal Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link th:href="@{/styles/style.css}" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <a class="link link-info fs-4" id="backLink">
+            Back
+        </a>
+
+        <script th:inline="javascript">
+            var previousPage = /*[[${previousPage}]]*/ '';
+            var backLink = document.getElementById('backLink');
+            backLink.href = previousPage || '/';
+        </script>
+
+
+        <h1 class="text-light text-center">Criminal Details</h1>
+        <div class="card card-bg px-4 pt-3 mt-5">
+            <div class="card-body">
+
+                <h1 class="card-title">
+                    <i class="bi bi-person-circle fs-1" th:text="${' ' + criminal.firstName + ' ' + criminal.lastName}">
+                    </i>
+                </h1>
+                <p class="card-text fs-4"><strong>Nickname:</strong> <span th:text="${criminal.nickname}"></span></p>
+                <p class="card-text fs-4"><strong>Criminal Profession:</strong> <span th:text="${criminal.criminalProfession}"></span></p>
+                <p class="card-text fs-4"><strong>Last Case:</strong> <span th:text="${criminal.lastCase}"></span></p>
+                <p class="card-text fs-4"><strong>Date of Archiving:</strong>
+                <span th:if="${criminal.archive != null}">
+                    <span th:text="${#dates.format(criminal.archive.archiveDate, 'yyyy-MM-dd')}"></span>
+                </span>
+                <span th:unless="${criminal.archive != null}">
+                    <span>Not archived</span>
+                </span>
+                </p>
+                <p class="card-text fs-4"><strong>Languages:</strong>
+                    <span th:if="${criminal.languages.size() > 0}">
+                        <span th:each="language : ${criminal.languages}">
+                                <span th:text="${language.language} + ', '"></span>
+                        </span>
+                    </span>
+                    <span th:unless="${criminal.languages.size() > 0}">
+                        <span>No data about any languages available</span>
+                    </span>
+                </p>
+                <p class="card-text fs-4"><strong>Criminal Details:</strong>
+                    <span th:if="${criminal.criminalDetails.size() > 0}">
+                        <ul>
+                            <li th:each="detail : ${criminal.criminalDetails}">
+                                <span class="fw-bold" th:text="${detail.attributeType} + ': '"></span>
+                                <span th:text="${detail.attributeValue}"></span>
+                            </li>
+                        </ul>
+                    </span>
+                    <span th:unless="${criminal.criminalDetails.size() > 0}">
+                        <span>No data</span>
+                    </span>
+                </p>
+                <p class="card-text fs-4"><strong>Criminal Bands:</strong>
+                    <span th:if="${criminal.crimeGroups.size() > 0}">
+                        <span th:each="group : ${criminal.crimeGroups}" th:text="${group.groupName} + ', '"></span>
+                    </span>
+                    <span th:unless="${criminal.crimeGroups.size() > 0}">
+                        <span>No data</span>
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+</body>
+</html>

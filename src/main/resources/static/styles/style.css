@@ -1,0 +1,14 @@
+body {
+    background-color: darkslategrey;
+}
+
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card-bg {
+    background-color: #66b3b3;
+}
