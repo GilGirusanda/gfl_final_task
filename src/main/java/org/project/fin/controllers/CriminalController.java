@@ -76,7 +76,7 @@ public class CriminalController {
     }
 
     private void processFormData(CriminalDetailsDTO dto) {
-        // Check each field and replace blank strings with null
+        // check each field and replace blank strings with null
         if (dto.getEyeColor() != null && dto.getEyeColor().isEmpty()) {
             dto.setEyeColor(null);
         }
