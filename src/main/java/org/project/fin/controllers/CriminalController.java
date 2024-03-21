@@ -7,6 +7,8 @@ import org.project.fin.DTO.CriminalDTO;
 import org.project.fin.DTO.CriminalDetailsDTO;
 import org.project.fin.models.Criminal;
 import org.project.fin.services.CriminalService;
+import org.project.fin.utils.mapper.Mapper;
+import org.project.fin.utils.mapper.criminal.CriminalMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.*;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CriminalController {
     private CriminalService criminalService;
+    private Mapper<Criminal, CriminalDTO> criminalCriminalDTOMapper;
 
     private static final String PREVIOUS_PAGE_ATTRIBUTE = "previousPage";
 
@@ -60,18 +63,30 @@ public class CriminalController {
         List<CriminalDTO> criminalList = criminalService.findAllDTO();
         model.addAttribute("criminals", criminalList);
         model.addAttribute("criminalDetailsDTO", new CriminalDetailsDTO());
+        model.addAttribute("criminalDTO", new CriminalDTO());
         return "search_panel";
     }
 
     // Filter criminals: do search by attributes only
     @PostMapping("/search")
     public String searchCriminals(@ModelAttribute CriminalDetailsDTO criminalDetailsDTO,
+                                  @ModelAttribute CriminalDTO criminalDTO,
                                   Model model) {
 
         processFormData(criminalDetailsDTO);
-        System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
+//        System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
 
-        model.addAttribute("criminals", criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
+        List<Criminal> foundList = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
+        Set<Criminal> foundSet = criminalService.searchCriminalsByCriminalInfoStrict(criminalDTO).stream()
+                .map(criminalCriminalDTOMapper::toEntity)
+                .collect(Collectors.toSet());
+//        dtoSet.removeAll(foundDtoList);
+        List<Criminal> intersection = foundList.stream()
+                .filter(foundDto -> foundSet.stream()
+                        .anyMatch(criminalDto -> Objects.equals(criminalDto.getId(), foundDto.getId())))
+                .collect(Collectors.toList());
+
+        model.addAttribute("criminals", intersection);
         return "search_panel";
     }
 
@@ -83,9 +98,9 @@ public class CriminalController {
         if (dto.getHairColor() != null && dto.getHairColor().isEmpty()) {
             dto.setHairColor(null);
         }
-        if (dto.getHeight() != null && dto.getHeight().isEmpty()) {
-            dto.setHeight(null);
-        }
+//        if (dto.getHeight() != null && dto.getHeight().isEmpty()) {
+//            dto.setHeight(null);
+//        }
         if (dto.getBirthPlace() != null && dto.getBirthPlace().isEmpty()) {
             dto.setBirthPlace(null);
         }

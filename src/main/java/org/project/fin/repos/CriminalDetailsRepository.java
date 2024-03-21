@@ -17,7 +17,7 @@ public interface CriminalDetailsRepository extends JpaRepository<CriminalDetails
     List<CriminalDetailsDTO> findCriminals_by_Attr_Crosstab_Named_2(
             @Param("eyeColor") String eyeColor,
             @Param("hairColor") String hairColor,
-            @Param("height") String height,
+            @Param("height") Float height,
             @Param("birthPlace") String birthPlace,
             @Param("birthDate") String birthDate,
             @Param("lastResidence") String lastResidence,

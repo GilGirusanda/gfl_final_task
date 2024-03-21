@@ -14,7 +14,7 @@ public class CriminalDetailsDTO {
     private Long criminalId;
     String eyeColor;
     String hairColor;
-    String height;
+    Float height;
     String birthPlace;
     LocalDate birthDate;
     String lastResidence;

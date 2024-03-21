@@ -17,7 +17,7 @@ import java.util.*;
         query = "SELECT ct.rowid as criminal_id, " +
                 "ct.EYE_COLOR, " +
                 "ct.HAIR_COLOR, " +
-                "ct.HEIGHT, " +
+                "CAST(ct.HEIGHT AS FLOAT), " +
                 "ct.BIRTH_PLACE, " +
                 "TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') as BIRTH_DATE, " +
                 "ct.LAST_RESIDENCE, " +
@@ -36,7 +36,7 @@ import java.util.*;
                 "AS ct(rowid bigint, EYE_COLOR varchar, HAIR_COLOR varchar, HEIGHT varchar, BIRTH_PLACE varchar, BIRTH_DATE varchar, LAST_RESIDENCE varchar, CITIZENSHIP varchar) " +
                 "WHERE (:eyeColor IS NULL OR ct.EYE_COLOR = :eyeColor) " +
                 "AND (:hairColor IS NULL OR ct.HAIR_COLOR = :hairColor) " +
-                "AND (:height IS NULL OR ct.HEIGHT = :height) " +
+                "AND (:height IS NULL OR CAST(ct.HEIGHT AS FLOAT) = CAST(:height AS FLOAT)) " +
                 "AND (:birthPlace IS NULL OR ct.BIRTH_PLACE = :birthPlace) " +
                 "AND (:birthDate IS NULL OR TO_TIMESTAMP(ct.BIRTH_DATE, 'YYYY-MM-DD') = TO_TIMESTAMP(:birthDate, 'YYYY-MM-DD')) " +
                 "AND (:lastResidence IS NULL OR ct.LAST_RESIDENCE = :lastResidence) " +
@@ -51,7 +51,7 @@ import java.util.*;
                         @ColumnResult(name = "criminal_id", type = Long.class),
                         @ColumnResult(name = "EYE_COLOR", type = String.class),
                         @ColumnResult(name = "HAIR_COLOR", type = String.class),
-                        @ColumnResult(name = "HEIGHT", type = String.class),
+                        @ColumnResult(name = "HEIGHT", type = Float.class),
                         @ColumnResult(name = "BIRTH_PLACE", type = String.class),
                         @ColumnResult(name = "BIRTH_DATE", type = LocalDate.class),
                         @ColumnResult(name = "LAST_RESIDENCE", type = String.class),
