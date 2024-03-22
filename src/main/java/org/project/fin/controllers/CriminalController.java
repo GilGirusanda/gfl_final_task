@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.project.fin.DTO.CriminalDTO;
 import org.project.fin.DTO.CriminalDetailsDTO;
+import org.project.fin.DTO.CriminalSearchDTO;
 import org.project.fin.models.Criminal;
 import org.project.fin.services.CriminalService;
 import org.project.fin.utils.mapper.Mapper;
@@ -62,22 +63,27 @@ public class CriminalController {
 
         List<CriminalDTO> criminalList = criminalService.findAllDTO();
         model.addAttribute("criminals", criminalList);
-        model.addAttribute("criminalDetailsDTO", new CriminalDetailsDTO());
-        model.addAttribute("criminalDTO", new CriminalDTO());
+//        model.addAttribute("criminalDetailsDTO", new CriminalDetailsDTO());
+//        model.addAttribute("criminalDTO", new CriminalDTO());
+        model.addAttribute("criminalSearchDto", new CriminalSearchDTO());
         return "search_panel";
     }
 
     // Filter criminals: do search by attributes only
     @PostMapping("/search")
-    public String searchCriminals(@ModelAttribute CriminalDetailsDTO criminalDetailsDTO,
-                                  @ModelAttribute CriminalDTO criminalDTO,
+    public String searchCriminals(@ModelAttribute CriminalSearchDTO criminalSearchDTO,
+//                                  @ModelAttribute CriminalDetailsDTO criminalDetailsDTO,
+//                                  @ModelAttribute CriminalDTO criminalDTO,
                                   Model model) {
+
+        CriminalDetailsDTO criminalDetailsDTO = criminalSearchDTO.getCriminalDetailsDto();
+        CriminalDTO criminalDTO = criminalSearchDTO.getCriminalDto();
 
         processFormData(criminalDetailsDTO);
 //        System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
 
         List<Criminal> foundCriminalsByAttrs = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
-        List<Criminal> foundCriminalsByInfo = criminalService.searchCriminalsByCriminalInfoStrict(criminalDTO).stream()
+        List<Criminal> foundCriminalsByInfo = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
                 .map(criminalCriminalDTOMapper::toEntity)
                 .collect(Collectors.toList());
 
@@ -90,6 +96,7 @@ public class CriminalController {
                 .collect(Collectors.toList());
 
         model.addAttribute("criminals", intersection);
+        model.addAttribute("criminalSearchDto", criminalSearchDTO);
         return "search_panel";
     }
 

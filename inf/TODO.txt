@@ -1,0 +1,15 @@
+1. Злочинні та мафіозні угруповання (дані про подільників).
+    1.1. Make a page with a list of bands.
+    1.2. When click on a band - open its members.
+    1.3. Make a form to add new member to some band ("Add" button behind name of the band).
+    1.4. Make a form (field) to search for a band by its name.
+
+2. Вибірка за будь-якими ознаками, або навіть за підмножиною ознак.
+(done)
+
+3. Перенесення тих що «зав’язали» в архів; видалення - тільки після смерті.
+    3.1. Make an archive page with a list of archived criminals
+    3.2. Add on the main page a button "Add to Archive" for each criminal in the table.
+
+4. Form to add new criminal.
+5. Form to update a criminal (same page as See criminal details, just add input fields and a submit button).

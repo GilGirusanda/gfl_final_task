@@ -36,7 +36,7 @@ public interface CriminalRepository extends JpaRepository<Criminal, Long> {
             "WHERE LOWER(c.firstName) LIKE CONCAT('%', LOWER(:firstName), '%') " +
             "AND LOWER(c.lastName) LIKE CONCAT('%', LOWER(:lastName), '%') " +
             "AND LOWER(c.nickname) LIKE CONCAT('%', LOWER(:nickname), '%') " +
-            "AND LOWER(c.criminalProfession) LIKE CONCAT('%', LOWER(:criminalProfession), '%')")
+            "AND c.criminalProfession = :criminalProfession")
     List<CriminalDTO> findCriminalsByCriminalInfoNotStrict(@Param("firstName") String firstName,
                                                   @Param("lastName") String lastName,
                                                   @Param("nickname") String nickname,
