@@ -13,6 +13,7 @@ import org.project.fin.utils.mapper.Mapper;
 import org.project.fin.utils.mapper.criminalDetails.CriminalDetailsMapperImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,8 +26,12 @@ public class CriminalDetailsService {
     private EntityManager em;
 
     public boolean save(CriminalDetailsDTO criminalDetailsDTO) {
-        List<CriminalDetails> detailsToSave = criminalDetailsDTOMapper.toEntity(criminalDetailsDTO);
-        criminalDetailsRepository.saveAll(detailsToSave);
-        return false;
+        try {
+            List<CriminalDetails> detailsToSave = criminalDetailsDTOMapper.toEntity(criminalDetailsDTO);
+            criminalDetailsRepository.saveAll(detailsToSave);
+            return true;
+        } catch(Exception ex) {
+            return false;
+        }
     }
 }

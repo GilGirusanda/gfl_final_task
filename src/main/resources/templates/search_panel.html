@@ -101,17 +101,21 @@
             function addNewCriminal() {
                 // Gather the form data
                 const formData = {
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    nickname: document.getElementById('nickname').value,
-                    criminalProfession: document.getElementById('criminalProfession').value,
-                    eyeColor: document.getElementById('eyeColor').value,
-                    hairColor: document.getElementById('hairColor').value,
-                    height: document.getElementById('height').value,
-                    birthPlace: document.getElementById('birthPlace').value,
-                    birthDate: document.getElementById('birthDate').value,
-                    lastResidence: document.getElementById('lastResidence').value,
-                    citizenship: document.getElementById('citizenship').value
+                    criminalDto:{
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        nickname: document.getElementById('nickname').value,
+                        criminalProfession: document.getElementById('criminalProfession').value
+                    },
+                    criminalDetailsDto: {
+                        eyeColor: document.getElementById('eyeColor').value,
+                        hairColor: document.getElementById('hairColor').value,
+                        height: document.getElementById('height').value,
+                        birthPlace: document.getElementById('birthPlace').value,
+                        birthDate: document.getElementById('birthDate').value,
+                        lastResidence: document.getElementById('lastResidence').value,
+                        citizenship: document.getElementById('citizenship').value
+                    }
                 };
 
                 // Send the form data to the server using AJAX (assuming you're using jQuery)
