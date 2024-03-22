@@ -28,4 +28,12 @@ public class CriminalDTO {
     private String firstName;
     private String nickname;
     private CriminalProfession criminalProfession;
+
+    public boolean isEmpty() {
+        return id == null &&
+                lastName == null &&
+                firstName == null &&
+                nickname == null &&
+                criminalProfession == null;
+    }
 }

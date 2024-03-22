@@ -3,13 +3,18 @@ package org.project.fin.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import org.project.fin.DTO.CriminalAddDTO;
 import org.project.fin.DTO.CriminalDTO;
 import org.project.fin.DTO.CriminalDetailsDTO;
 import org.project.fin.DTO.CriminalSearchDTO;
 import org.project.fin.models.Criminal;
+import org.project.fin.models.CriminalDetails;
+import org.project.fin.services.CriminalDetailsService;
 import org.project.fin.services.CriminalService;
 import org.project.fin.utils.mapper.Mapper;
 import org.project.fin.utils.mapper.criminal.CriminalMapper;
+import org.project.fin.utils.mapper.criminal.CriminalMapperImpl;
+import org.project.fin.utils.mapper.criminalDetails.CriminalDetailsMapperImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.*;
@@ -23,7 +28,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CriminalController {
     private CriminalService criminalService;
-    private Mapper<Criminal, CriminalDTO> criminalCriminalDTOMapper;
+    private CriminalDetailsService criminalDetailsService;
+    private CriminalMapperImpl criminalCriminalDTOMapper;
 
     private static final String PREVIOUS_PAGE_ATTRIBUTE = "previousPage";
 
@@ -55,16 +61,8 @@ public class CriminalController {
     public String searchCriminalsPage(Model model) {
         request.getSession().setAttribute(PREVIOUS_PAGE_ATTRIBUTE, "/search");
 
-//        System.out.println("---------------- Search START -----------------");
-//        CriminalDetailsDTO temp = new CriminalDetailsDTO();
-//        temp.setEyeColor("green");
-//        System.out.println(criminalService.searchCriminalsByAttributes(temp));
-//        System.out.println("---------------- Search END -----------------");
-
         List<CriminalDTO> criminalList = criminalService.findAllDTO();
         model.addAttribute("criminals", criminalList);
-//        model.addAttribute("criminalDetailsDTO", new CriminalDetailsDTO());
-//        model.addAttribute("criminalDTO", new CriminalDTO());
         model.addAttribute("criminalSearchDto", new CriminalSearchDTO());
         return "search_panel";
     }
@@ -72,8 +70,6 @@ public class CriminalController {
     // Filter criminals: do search by attributes only
     @PostMapping("/search")
     public String searchCriminals(@ModelAttribute CriminalSearchDTO criminalSearchDTO,
-//                                  @ModelAttribute CriminalDetailsDTO criminalDetailsDTO,
-//                                  @ModelAttribute CriminalDTO criminalDTO,
                                   Model model) {
 
         CriminalDetailsDTO criminalDetailsDTO = criminalSearchDTO.getCriminalDetailsDto();
@@ -89,6 +85,7 @@ public class CriminalController {
                     .map(criminalCriminalDTOMapper::toEntity)
                     .collect(Collectors.toList());
 
+//            System.out.println("1 branch");
 //            System.out.println("Attrs: " + foundCriminalsByAttrs);
 //            System.out.println("Info: " + foundCriminalsByInfo);
 
@@ -96,7 +93,15 @@ public class CriminalController {
                     .filter(crByAttr -> foundCriminalsByInfo.stream()
                             .anyMatch(crByInfo -> Objects.equals(crByInfo.getId(), crByAttr.getId())))
                     .collect(Collectors.toList());
+        } else if(criminalDTO.isEmpty() && !criminalDetailsDTO.isEmpty()) {
+//            System.out.println("2 branch");
+//            System.out.println("criminalDetailsDTO: " + criminalDetailsDTO);
+//            System.out.println("criminalDTO: " + criminalDTO);
+            criminals = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
         } else {
+//            System.out.println("3 branch");
+//            System.out.println("criminalDetailsDTO: " + criminalDetailsDTO);
+//            System.out.println("criminalDTO: " + criminalDTO);
             criminals = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
                     .map(criminalCriminalDTOMapper::toEntity)
                     .collect(Collectors.toList());
@@ -130,9 +135,39 @@ public class CriminalController {
 
     // Add new criminal
     @PostMapping("/criminal/add")
-    public String add(@RequestBody Criminal criminal) {
-        boolean isSuccess = criminalService.save(criminal);
-        return "redirect:/";
+    @ResponseBody
+    public String add(@RequestBody CriminalAddDTO criminalAddDTO) {
+        try {
+            boolean isSuccessDetails = false;
+            boolean isSuccessCriminal = false;
+
+            // Save Criminal Details
+            CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
+            if(!criminalDetailsDTO.isEmpty()) {
+                isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
+            }
+
+            // Save Criminal
+            CriminalDTO criminalDTO = criminalAddDTO.getCriminalDto();
+            if(!criminalDTO.isEmpty()) {
+                Criminal criminal = criminalCriminalDTOMapper.toEntity(criminalDTO);
+                isSuccessCriminal = criminalService.save(criminal);
+            }
+
+            // Return success message
+            if(isSuccessCriminal && isSuccessDetails)
+                return "Criminal and Details added successfully!";
+            else if(isSuccessCriminal)
+                return "Only criminal added successfully!";
+            else if(isSuccessDetails)
+                return "Only details added successfully!";
+            else
+                return "No success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return error message
+            return "Failed to add criminal: " + e.getMessage();
+        }
     }
 
     // Update criminal's data
