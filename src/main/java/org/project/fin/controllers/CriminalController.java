@@ -80,22 +80,28 @@ public class CriminalController {
         CriminalDTO criminalDTO = criminalSearchDTO.getCriminalDto();
 
         processFormData(criminalDetailsDTO);
-//        System.out.println(criminalService.searchCriminalsByAttributes(criminalDetailsDTO));
 
-        List<Criminal> foundCriminalsByAttrs = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
-        List<Criminal> foundCriminalsByInfo = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
-                .map(criminalCriminalDTOMapper::toEntity)
-                .collect(Collectors.toList());
+        List<Criminal> criminals;
 
-        System.out.println("Attrs: "+foundCriminalsByAttrs);
-        System.out.println("Info: "+foundCriminalsByInfo);
+        if(!criminalDetailsDTO.isEmpty()) {
+            List<Criminal> foundCriminalsByAttrs = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
+            List<Criminal> foundCriminalsByInfo = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
+                    .map(criminalCriminalDTOMapper::toEntity)
+                    .collect(Collectors.toList());
 
-        List<Criminal> intersection = foundCriminalsByAttrs.stream()
-                .filter(crByAttr -> foundCriminalsByInfo.stream()
-                        .anyMatch(crByInfo -> Objects.equals(crByInfo.getId(), crByAttr.getId())))
-                .collect(Collectors.toList());
+//            System.out.println("Attrs: " + foundCriminalsByAttrs);
+//            System.out.println("Info: " + foundCriminalsByInfo);
 
-        model.addAttribute("criminals", intersection);
+            criminals = foundCriminalsByAttrs.stream()
+                    .filter(crByAttr -> foundCriminalsByInfo.stream()
+                            .anyMatch(crByInfo -> Objects.equals(crByInfo.getId(), crByAttr.getId())))
+                    .collect(Collectors.toList());
+        } else {
+            criminals = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
+                    .map(criminalCriminalDTOMapper::toEntity)
+                    .collect(Collectors.toList());
+        }
+        model.addAttribute("criminals", criminals);
         model.addAttribute("criminalSearchDto", criminalSearchDTO);
         return "search_panel";
     }

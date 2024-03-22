@@ -105,9 +105,9 @@ public class CriminalService {
     public List<CriminalDTO> searchCriminalsByCriminalInfoNotStrict(CriminalDTO criminalDTO) {
 //        String criminalProfession = criminalDTO.getCriminalProfession() != null ? criminalDTO.getCriminalProfession().toString() : null;
         List<CriminalDTO> filteredCriminals = criminalRepository.findCriminalsByCriminalInfoNotStrict(
-                criminalDTO.getFirstName(),
-                criminalDTO.getLastName(),
-                criminalDTO.getNickname(),
+                criminalDTO.getFirstName() != null ? criminalDTO.getFirstName() : "",
+                criminalDTO.getLastName() != null ? criminalDTO.getLastName() : "",
+                criminalDTO.getNickname() != null ? criminalDTO.getNickname() : "",
                 criminalDTO.getCriminalProfession()
         );
         return filteredCriminals;

@@ -20,6 +20,17 @@ public class CriminalDetailsDTO {
     String lastResidence;
     String citizenship;
 
+    public boolean isEmpty() {
+        return criminalId == null &&
+                eyeColor == null &&
+                hairColor == null &&
+                height == null &&
+                birthPlace == null &&
+                birthDate == null &&
+                lastResidence == null &&
+                citizenship == null;
+    }
+
 //    public CriminalDetailsDTO(Long criminalId, String eyeColor, String hairColor, String height, String birthPlace, String birthDate, String lastResidence, String citizenship) {
 //        this.criminalId = criminalId;
 //        this.eyeColor = eyeColor;
