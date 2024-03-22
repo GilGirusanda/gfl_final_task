@@ -11,5 +11,7 @@
     3.1. Make an archive page with a list of archived criminals
     3.2. Add on the main page a button "Add to Archive" for each criminal in the table.
 
-4. Form to add new criminal.
-5. Form to update a criminal (same page as See criminal details, just add input fields and a submit button).
+4. Form to add new criminal and criminal details.
+(done)
+
+5. Form to update a criminal and criminal details (same page as See criminal details, just add input fields and a submit button).

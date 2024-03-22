@@ -46,9 +46,9 @@ public class CriminalService {
         return criminalOpt.orElse(null);
     }
 
-    public boolean save(Criminal criminal) {
+    public Criminal save(Criminal criminal) {
         Criminal savedCriminal = criminalRepository.save(criminal);
-        return savedCriminal.getId() > 0;
+        return savedCriminal;//.getId() > 0
     }
 
     public boolean update(long criminalId, Criminal criminal) {

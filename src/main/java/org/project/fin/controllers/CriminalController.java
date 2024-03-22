@@ -140,19 +140,25 @@ public class CriminalController {
         try {
             boolean isSuccessDetails = false;
             boolean isSuccessCriminal = false;
-
-            // Save Criminal Details
-            CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
-            if(!criminalDetailsDTO.isEmpty()) {
-                isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
-            }
+            Criminal savedCriminal = null;
 
             // Save Criminal
             CriminalDTO criminalDTO = criminalAddDTO.getCriminalDto();
             if(!criminalDTO.isEmpty()) {
                 Criminal criminal = criminalCriminalDTOMapper.toEntity(criminalDTO);
                 criminal.setLastCase("Few details");
-                isSuccessCriminal = criminalService.save(criminal);
+                savedCriminal = criminalService.save(criminal);
+                isSuccessCriminal = savedCriminal.getId() > 0;
+            }
+
+            // Save Criminal Details
+            CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
+            if(!criminalDetailsDTO.isEmpty()) {
+                processFormData(criminalDetailsDTO);
+                if(savedCriminal!=null && savedCriminal.getId() > 0) {
+                    criminalDetailsDTO.setCriminalId(savedCriminal.getId());
+                    isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
+                }
             }
 
             // Return success message
