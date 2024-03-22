@@ -99,6 +99,14 @@
 
         <script>
             function addNewCriminal() {
+                if(document.getElementById('nickname').value.trim() === '') {
+                    alert('`Nickname` field cannot be empty')
+                    return;
+                }
+                if(document.getElementById('criminalProfession').value.trim() === '') {
+                    alert('`Criminal Profession` field cannot be empty')
+                    return;
+                }
                 // Gather the form data
                 const formData = {
                     criminalDto:{

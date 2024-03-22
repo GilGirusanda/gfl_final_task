@@ -151,6 +151,7 @@ public class CriminalController {
             CriminalDTO criminalDTO = criminalAddDTO.getCriminalDto();
             if(!criminalDTO.isEmpty()) {
                 Criminal criminal = criminalCriminalDTOMapper.toEntity(criminalDTO);
+                criminal.setLastCase("Few details");
                 isSuccessCriminal = criminalService.save(criminal);
             }
 
