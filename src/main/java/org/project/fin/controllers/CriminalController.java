@@ -3,14 +3,12 @@ package org.project.fin.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.project.fin.DTO.*;
+import org.project.fin.models.Archive;
 import org.project.fin.models.Criminal;
 import org.project.fin.models.CriminalDetails;
 import org.project.fin.models.Language;
 import org.project.fin.models.enums.AttributeType;
-import org.project.fin.services.CrimeGroupService;
-import org.project.fin.services.CriminalDetailsService;
-import org.project.fin.services.CriminalService;
-import org.project.fin.services.LanguageService;
+import org.project.fin.services.*;
 import org.project.fin.utils.mapper.criminal.CriminalMapperImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +24,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 @AllArgsConstructor
 public class CriminalController {
+    private ArchiveService archiveService;
     private CrimeGroupService crimeGroupService;
     private LanguageService languageService;
     private CriminalService criminalService;
@@ -65,12 +64,14 @@ public class CriminalController {
         List<CriminalDTO> criminalList = criminalService.findAllDTO();
         model.addAttribute("criminals", criminalList);
         model.addAttribute("criminalSearchDto", new CriminalSearchDTO());
+        model.addAttribute("isArchived", Boolean.FALSE);
         return "search_panel";
     }
 
     // Filter criminals: do search by attributes only
     @PostMapping("/search")
     public String searchCriminals(@ModelAttribute CriminalSearchDTO criminalSearchDTO,
+                                  @RequestParam(name="isArchived", required = false) Boolean isArchived,
                                   Model model) {
 
         CriminalDetailsDTO criminalDetailsDTO = criminalSearchDTO.getCriminalDetailsDto();
@@ -107,8 +108,22 @@ public class CriminalController {
                     .map(criminalCriminalDTOMapper::toEntity)
                     .collect(Collectors.toList());
         }
+
+        System.out.println("isArchived ---> : " + isArchived);
+        if(isArchived != null && isArchived) {
+//            List<Long> criminalIds = criminals.stream()
+//                    .map(Criminal::getId)
+//                    .collect(Collectors.toList());
+//            HashSet<Long> archivedCriminalIds = archiveService.findArchivedCriminalIds(criminalIds);
+//            criminals = criminals.stream()
+//                    .filter(c -> archivedCriminalIds.contains(c.getId()))
+//                    .collect(Collectors.toList());
+            criminals = archiveService.filterArchivedCriminals(criminals, isArchived);
+        }
+
         model.addAttribute("criminals", criminals);
         model.addAttribute("criminalSearchDto", criminalSearchDTO);
+        model.addAttribute("isArchived", isArchived);
         return "search_panel";
     }
 

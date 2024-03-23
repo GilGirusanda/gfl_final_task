@@ -27,22 +27,30 @@
                 <div class="row mt-3">
                     <div class="col">
                         <label for="firstName" class="form-label text-light">First Name</label>
-                        <input type="text" class="form-control" id="firstName" name="criminalDto.firstName" th:value="${criminalSearchDto.criminalDto.firstName}">
+                        <input type="text" class="form-control" id="firstName"
+                               name="criminalDto.firstName" th:value="${criminalSearchDto.criminalDto.firstName}">
                     </div>
                     <div class="col">
                         <label for="lastName" class="form-label text-light">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" name="criminalDto.lastName" th:value="${criminalSearchDto.criminalDto.lastName}">
+                        <input type="text" class="form-control" id="lastName"
+                               name="criminalDto.lastName" th:value="${criminalSearchDto.criminalDto.lastName}">
                     </div>
                     <div class="col">
                         <label for="nickname" class="form-label text-light">Nickname</label>
-                        <input type="text" class="form-control" id="nickname" name="criminalDto.nickname" th:value="${criminalSearchDto.criminalDto.nickname}">
+                        <input type="text" class="form-control" id="nickname"
+                               name="criminalDto.nickname" th:value="${criminalSearchDto.criminalDto.nickname}">
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col">
                         <label for="criminalProfession" class="form-label text-light">Criminal Profession</label>
-                        <select class="form-select" id="criminalProfession" name="criminalDto.criminalProfession" th:value="${criminalSearchDto.criminalDto.criminalProfession}">
-                            <option value="" th:selected="${criminalSearchDto.criminalDto.criminalProfession == null}">Select Profession</option>
+                        <select class="form-select"
+                                id="criminalProfession"
+                                name="criminalDto.criminalProfession"
+                                th:value="${criminalSearchDto.criminalDto.criminalProfession}">
+                            <option value="" th:selected="${criminalSearchDto.criminalDto.criminalProfession == null}">
+                                Select Profession
+                            </option>
                             <option th:each="profession : ${T(org.project.fin.models.enums.CriminalProfession).values()}"
                                     th:value="${profession}" th:text="${#strings.capitalize(profession.toString().toLowerCase())}"
                                     th:selected="${profession == criminalSearchDto.criminalDto.criminalProfession}">
@@ -55,35 +63,53 @@
                 <div class="row mt-3">
                     <div class="col">
                         <label for="eyeColor" class="form-label text-light">Eye Color</label>
-                        <input type="text" class="form-control" id="eyeColor" name="criminalDetailsDto.eyeColor" th:value="${criminalSearchDto.criminalDetailsDto.eyeColor}">
+                        <input type="text" class="form-control" id="eyeColor"
+                               name="criminalDetailsDto.eyeColor" th:value="${criminalSearchDto.criminalDetailsDto.eyeColor}">
                     </div>
                     <div class="col">
                         <label for="hairColor" class="form-label text-light">Hair Color</label>
-                        <input type="text" class="form-control" id="hairColor" name="criminalDetailsDto.hairColor" th:value="${criminalSearchDto.criminalDetailsDto.hairColor}">
+                        <input type="text" class="form-control" id="hairColor"
+                               name="criminalDetailsDto.hairColor" th:value="${criminalSearchDto.criminalDetailsDto.hairColor}">
                     </div>
                     <div class="col">
                         <label for="height" class="form-label text-light">Height</label>
-                        <input type="number" step="0.01" class="form-control" id="height" name="criminalDetailsDto.height" th:value="${criminalSearchDto.criminalDetailsDto.height}">
+                        <input type="number" step="0.01" class="form-control" id="height"
+                               name="criminalDetailsDto.height" th:value="${criminalSearchDto.criminalDetailsDto.height}">
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col">
                         <label for="birthPlace" class="form-label text-light">Birth Place</label>
-                        <input type="text" class="form-control" id="birthPlace" name="criminalDetailsDto.birthPlace" th:value="${criminalSearchDto.criminalDetailsDto.birthPlace}">
+                        <input type="text" class="form-control" id="birthPlace"
+                               name="criminalDetailsDto.birthPlace" th:value="${criminalSearchDto.criminalDetailsDto.birthPlace}">
                     </div>
                     <div class="col">
                         <label for="birthDate" class="form-label text-light">Birth Date</label>
-                        <input type="date" class="form-control" id="birthDate" name="criminalDetailsDto.birthDate" th:value="${criminalSearchDto.criminalDetailsDto.birthDate}">
+                        <input type="date" class="form-control" id="birthDate"
+                               name="criminalDetailsDto.birthDate" th:value="${criminalSearchDto.criminalDetailsDto.birthDate}">
                     </div>
                     <div class="col">
                         <label for="lastResidence" class="form-label text-light">Last Residence</label>
-                        <input type="text" class="form-control" id="lastResidence" name="criminalDetailsDto.lastResidence" th:value="${criminalSearchDto.criminalDetailsDto.lastResidence}">
+                        <input type="text" class="form-control" id="lastResidence"
+                               name="criminalDetailsDto.lastResidence" th:value="${criminalSearchDto.criminalDetailsDto.lastResidence}">
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col">
                         <label for="citizenship" class="form-label text-light">Citizenship</label>
-                        <input type="text" class="form-control" id="citizenship" name="criminalDetailsDto.citizenship" th:value="${criminalSearchDto.criminalDetailsDto.citizenship}">
+                        <input type="text" class="form-control" id="citizenship"
+                               name="criminalDetailsDto.citizenship" th:value="${criminalSearchDto.criminalDetailsDto.citizenship}">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div classs="col">
+                        <div class="form-check form-switch">
+                            <label for="isArchived" class="form-check-label text-light">Archived Only?</label>
+                            <input type="checkbox" class="form-check-input"
+                                   id="isArchived"
+                                   name="isArchived"
+                                   th:checked="${isArchived}">
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">

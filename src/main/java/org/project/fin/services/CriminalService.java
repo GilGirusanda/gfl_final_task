@@ -51,6 +51,12 @@ public class CriminalService {
     }
 
     public Criminal save(Criminal criminal) {
+        if(criminal.getFirstName().isBlank()) {
+            criminal.setFirstName(null);
+        }
+        if(criminal.getLastName().isBlank()) {
+            criminal.setLastName(null);
+        }
         Criminal savedCriminal = criminalRepository.save(criminal);
         return savedCriminal;//.getId() > 0
     }
