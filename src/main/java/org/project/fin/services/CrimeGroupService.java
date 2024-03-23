@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -44,5 +47,21 @@ public class CrimeGroupService {
 
         crimeGroupRepository.save(group);
 //        criminalRepository.save(criminal);
+    }
+
+    public List<Criminal> filterCriminalsByGroup(List<Criminal> criminals, String groupName) {
+        if (!groupName.isBlank()) {
+            HashSet<Long> criminalIds = criminals.stream()
+                    .map(Criminal::getId)
+                    .collect(Collectors.toCollection(HashSet::new));
+
+            List<Long> groupedCriminalIds = crimeGroupRepository.findCriminalIdsByCrimeGroupNameNotStrict(groupName);
+
+            return criminals.stream()
+                    .filter(c -> groupedCriminalIds.contains(c.getId()))
+                    .collect(Collectors.toList());
+        } else {
+            return criminals;
+        }
     }
 }

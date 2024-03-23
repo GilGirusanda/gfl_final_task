@@ -36,14 +36,18 @@
                                name="criminalDto.lastName" th:value="${criminalSearchDto.criminalDto.lastName}">
                     </div>
                     <div class="col">
-                        <label for="nickname" class="form-label text-light">Nickname</label>
+                        <label for="nickname" class="form-label text-light">Nickname
+                            <span class="text-danger blockquote-footer">(mandatory to add new)</span>
+                        </label>
                         <input type="text" class="form-control" id="nickname"
                                name="criminalDto.nickname" th:value="${criminalSearchDto.criminalDto.nickname}">
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col">
-                        <label for="criminalProfession" class="form-label text-light">Criminal Profession</label>
+                        <label for="criminalProfession" class="form-label text-light">Criminal Profession
+                            <span class="text-danger blockquote-footer">(mandatory to add new)</span>
+                        </label>
                         <select class="form-select"
                                 id="criminalProfession"
                                 name="criminalDto.criminalProfession"
@@ -100,11 +104,20 @@
                         <input type="text" class="form-control" id="citizenship"
                                name="criminalDetailsDto.citizenship" th:value="${criminalSearchDto.criminalDetailsDto.citizenship}">
                     </div>
+                    <div class="col">
+                        <label for="selectedCrimeGroup" class="form-label text-light">Crime Group
+                            <span class="text-info blockquote-footer">(filtering only)</span>
+                        </label>
+                        <input type="text" class="form-control" id="selectedCrimeGroup"
+                               name="selectedCrimeGroup" th:value="${selectedCrimeGroup}">
+                    </div>
                 </div>
                 <div class="row mt-3">
                     <div classs="col">
                         <div class="form-check form-switch">
-                            <label for="isArchived" class="form-check-label text-light">Archived Only?</label>
+                            <label for="isArchived" class="form-check-label text-light">Archived Only?
+                                <span class="text-info blockquote-footer">(filtering only)</span>
+                            </label>
                             <input type="checkbox" class="form-check-input"
                                    id="isArchived"
                                    name="isArchived"

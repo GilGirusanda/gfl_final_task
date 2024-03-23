@@ -65,6 +65,7 @@ public class CriminalController {
         model.addAttribute("criminals", criminalList);
         model.addAttribute("criminalSearchDto", new CriminalSearchDTO());
         model.addAttribute("isArchived", Boolean.FALSE);
+        model.addAttribute("selectedCrimeGroup", "");
         return "search_panel";
     }
 
@@ -72,6 +73,7 @@ public class CriminalController {
     @PostMapping("/search")
     public String searchCriminals(@ModelAttribute CriminalSearchDTO criminalSearchDTO,
                                   @RequestParam(name="isArchived", required = false) Boolean isArchived,
+                                  @RequestParam(name="selectedCrimeGroup", required = false) String selectedCrimeGroup,
                                   Model model) {
 
         CriminalDetailsDTO criminalDetailsDTO = criminalSearchDTO.getCriminalDetailsDto();
@@ -111,19 +113,17 @@ public class CriminalController {
 
         System.out.println("isArchived ---> : " + isArchived);
         if(isArchived != null && isArchived) {
-//            List<Long> criminalIds = criminals.stream()
-//                    .map(Criminal::getId)
-//                    .collect(Collectors.toList());
-//            HashSet<Long> archivedCriminalIds = archiveService.findArchivedCriminalIds(criminalIds);
-//            criminals = criminals.stream()
-//                    .filter(c -> archivedCriminalIds.contains(c.getId()))
-//                    .collect(Collectors.toList());
             criminals = archiveService.filterArchivedCriminals(criminals, isArchived);
         }
+
+        System.out.println("selectedCrimeGroup ---> : " + selectedCrimeGroup);
+        System.out.println("selectedCrimeGroup (is not Blank) ---> : " + !selectedCrimeGroup.isBlank());
+        criminals = crimeGroupService.filterCriminalsByGroup(criminals, selectedCrimeGroup);
 
         model.addAttribute("criminals", criminals);
         model.addAttribute("criminalSearchDto", criminalSearchDTO);
         model.addAttribute("isArchived", isArchived);
+        model.addAttribute("selectedCrimeGroup", selectedCrimeGroup);
         return "search_panel";
     }
 
