@@ -15,3 +15,42 @@
 (done)
 
 5. Form to update a criminal and criminal details (same page as See criminal details, just add input fields and a submit button).
+
+            <p class="card-text fs-4"><strong>Criminal Details:</strong>
+                <span th:if="${criminal.criminalDetails.size() > 0}">
+                    <ul>
+                        <li th:each="detail : ${criminal.criminalDetails}">
+                            <label th:for="${'criminalDetails'+detail.attributeType}" th:text="${detail.attributeType}"></label>
+                            <input type="text" class="form-control"
+                                   th:if="${detail.attributeType.toString() != 'BIRTH_DATE'}"
+                                   th:id="${'criminalDetails'+detail.attributeType}" name="criminalDetails"
+                                   th:value="${detail.attributeValue}">
+                            <input type="text" class="form-control"
+                                   th:if="${detail.attributeType.toString() == 'BIRTH_DATE'}"
+                                   th:id="${'criminalDetails'+detail.attributeType}" name="criminalDetails"
+                                   th:value="${detail.attributeValue}">
+                            <br>
+                            <li th:each="type : ${detailsTypes}">
+                                <input type="text" th:if="type == detail.attributeType" th:value="${detail.attributeValue}">
+                                <input type="text" th:if="type != detail.attributeType" th:value="${detail.attributeValue}">
+                            </li>
+                        </li>
+                    </ul>
+                </span>
+                <span th:unless="${criminal.criminalDetails.size() > 0}">
+                    <input type="text" class="form-control" name="criminalDetails" placeholder="Add new criminal detail">
+                </span>
+            </p>
+
+
+
+
+                    <li th:each="detailType : ${detailsTypes}">
+                        <label th:for="${detailType}" th:text="${detailType}"></label>
+                        <input type="text" class="form-control"
+                               th:id="${detailType}"
+                               th:value="${detailsMap.get(detailType)}"
+                               th:name="${detailsMap}" >
+                        <!--                               name="detailsMap['${detailType}']"-->
+                        <br>
+                    </li>

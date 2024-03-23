@@ -65,10 +65,8 @@ public class Criminal {
     private Set<CriminalDetails> criminalDetails = new HashSet<>();
 
     @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER, cascade = {
-            CascadeType.DETACH,
             CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH})
+            CascadeType.PERSIST})
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 5)
     private Set<CrimeGroup> crimeGroups = new HashSet<>();

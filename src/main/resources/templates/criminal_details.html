@@ -33,7 +33,7 @@
                 <p class="card-text fs-4"><strong>Last Case:</strong> <span th:text="${criminal.lastCase}"></span></p>
                 <p class="card-text fs-4"><strong>Date of Archiving:</strong>
                 <span th:if="${criminal.archive != null}">
-                    <span th:text="${#dates.format(criminal.archive.archiveDate, 'yyyy-MM-dd')}"></span>
+                    <span th:text="${#temporals.format(criminal.archive.archiveDate, 'yyyy-MM-dd')}"></span>
                 </span>
                 <span th:unless="${criminal.archive != null}">
                     <span>Not archived</span>

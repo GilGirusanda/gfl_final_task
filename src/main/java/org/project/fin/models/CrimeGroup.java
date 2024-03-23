@@ -22,7 +22,7 @@ public class CrimeGroup {
     @Column(name = "group_name", nullable = false)
     private String groupName;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "criminal_crimegroup",
     joinColumns = {@JoinColumn(name = "crimegroup_id")},
     inverseJoinColumns = {@JoinColumn(name = "criminal_id")})

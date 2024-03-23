@@ -1,25 +1,23 @@
 package org.project.fin.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
-import org.project.fin.DTO.CriminalAddDTO;
-import org.project.fin.DTO.CriminalDTO;
-import org.project.fin.DTO.CriminalDetailsDTO;
-import org.project.fin.DTO.CriminalSearchDTO;
+import org.project.fin.DTO.*;
 import org.project.fin.models.Criminal;
 import org.project.fin.models.CriminalDetails;
+import org.project.fin.models.Language;
+import org.project.fin.models.enums.AttributeType;
+import org.project.fin.services.CrimeGroupService;
 import org.project.fin.services.CriminalDetailsService;
 import org.project.fin.services.CriminalService;
-import org.project.fin.utils.mapper.Mapper;
-import org.project.fin.utils.mapper.criminal.CriminalMapper;
+import org.project.fin.services.LanguageService;
 import org.project.fin.utils.mapper.criminal.CriminalMapperImpl;
-import org.project.fin.utils.mapper.criminalDetails.CriminalDetailsMapperImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +25,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 @AllArgsConstructor
 public class CriminalController {
+    private CrimeGroupService crimeGroupService;
+    private LanguageService languageService;
     private CriminalService criminalService;
     private CriminalDetailsService criminalDetailsService;
     private CriminalMapperImpl criminalCriminalDTOMapper;
@@ -75,7 +75,7 @@ public class CriminalController {
         CriminalDetailsDTO criminalDetailsDTO = criminalSearchDTO.getCriminalDetailsDto();
         CriminalDTO criminalDTO = criminalSearchDTO.getCriminalDto();
 
-        processFormData(criminalDetailsDTO);
+        processFormDataEmptyValues(criminalDetailsDTO);
 
         List<Criminal> criminals;
 
@@ -111,7 +111,7 @@ public class CriminalController {
         return "search_panel";
     }
 
-    private void processFormData(CriminalDetailsDTO dto) {
+    private void processFormDataEmptyValues(CriminalDetailsDTO dto) {
         // check each field and replace blank strings with null
         if (dto.getEyeColor() != null && dto.getEyeColor().isEmpty()) {
             dto.setEyeColor(null);
@@ -154,7 +154,7 @@ public class CriminalController {
             // Save Criminal Details
             CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
             if(!criminalDetailsDTO.isEmpty()) {
-                processFormData(criminalDetailsDTO);
+                processFormDataEmptyValues(criminalDetailsDTO);
                 if(savedCriminal!=null && savedCriminal.getId() > 0) {
                     criminalDetailsDTO.setCriminalId(savedCriminal.getId());
                     isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
@@ -177,12 +177,157 @@ public class CriminalController {
         }
     }
 
-    // Update criminal's data
-    @PutMapping("/criminal/{criminal_id}/update")
+    // Update criminal's data: get page
+    @GetMapping("/criminal/{criminal_id}/update")
+    public String updateGetPage(@PathVariable("criminal_id") long criminalId,
+                                Model model
+    ) {
+        Criminal foundCriminal = criminalService.findById(criminalId);
+        List<Language> availableLanguages = languageService.findAll();
+        List<AttributeType> detailsTypes = Arrays.stream(AttributeType.values()).toList();
+
+        HashMap<AttributeType, String> detailsMap = new HashMap<>();
+        for(AttributeType t : detailsTypes) {
+            Optional<CriminalDetails> criminalDetailsOpt = foundCriminal.getCriminalDetails().stream().filter(d->d.getAttributeType().equals(t)).findFirst();
+            if(criminalDetailsOpt.isPresent()) {
+                String criminalDetailValue = criminalDetailsOpt.get().getAttributeValue();
+                detailsMap.put(t, criminalDetailValue);
+            } else {
+                detailsMap.put(t, "");
+            }
+        }
+
+        CriminalDetailsMapForm criminalDetailsMapForm = new CriminalDetailsMapForm();
+        criminalDetailsMapForm.setDetailsMap(detailsMap);
+        criminalDetailsMapForm.setCriminal(foundCriminal);
+//        model.addAttribute("criminal", foundCriminal);
+        model.addAttribute("availableLanguages", availableLanguages);
+        model.addAttribute("detailsTypes", detailsTypes);
+        model.addAttribute("criminalSearchDTO", new CriminalSearchDTO());
+//        model.addAttribute("detailsMap", detailsMap);
+        model.addAttribute("criminalDetailsMapForm", criminalDetailsMapForm);
+        model.addAttribute("newCrimeGroupName", "");
+        model.addAttribute("newLanguage", "");
+        return "criminal_dossier";
+    }
+
+    // Update criminal's data: Change data
+    @PostMapping("/criminal/{criminal_id}/update")
     public String update(@PathVariable("criminal_id") long criminalId,
-                                    @RequestBody Criminal criminal) {
-        boolean isSuccess = criminalService.update(criminalId, criminal);
-        return "redirect:/criminal/" + criminalId;
+//                         @ModelAttribute("detailsMap") HashMap<AttributeType, String> detailsMap,
+                         @ModelAttribute("criminalDetailsMapForm") CriminalDetailsMapForm criminalDetailsMapForm,
+                         @ModelAttribute CriminalSearchDTO criminalSearchDTO,
+//                         @ModelAttribute Criminal criminal,
+                         @RequestParam("newLanguage") String newLanguage,
+                         @RequestParam("newCrimeGroupName") String newCrimeGroupName,
+                         Model model) {
+        try {
+            HashMap<AttributeType, String> detailsMap = criminalDetailsMapForm.getDetailsMap();
+            Criminal criminal = criminalDetailsMapForm.getCriminal();
+            criminal.setId(criminalId);
+            languageService.addLanguageToCriminal(criminalId, newLanguage);
+//            System.out.println("newCrimeGroupName ----> : " + newCrimeGroupName);
+//            System.out.println("detailsMap ----> : " + detailsMap);
+//            System.out.println("detailsMap get value ----> : " + detailsMap.get(AttributeType.EYE_COLOR));
+//
+//            System.out.println("detailsMap(keys): "+detailsMap.keySet());
+//            System.out.println("detailsMap(values): "+detailsMap.entrySet());
+
+            boolean isSuccessDetails = false;
+            boolean isSuccessCriminal = false;
+
+            // Update Criminal
+//            CriminalDTO criminalDTO = criminalSearchDTO.getCriminalDto();
+//            if(!criminalDTO.isEmpty()) {
+//                Criminal convertedCriminal = criminalCriminalDTOMapper.toEntity(criminalDTO);
+//                boolean isSuccess = criminalService.update(criminalId, convertedCriminal);
+//            }
+
+
+//            System.out.println("Criminal ID:"+ criminalId + "; Criminal:" + criminal);
+//            System.out.println("Criminal DETAILS:" + criminal.getCriminalDetails());
+//            CrimeGroup newGroup = new CrimeGroup(); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
+//            newGroup.setGroupName(newCrimeGroupName); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
+//            newGroup.getMembers().add(criminal); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
+            System.out.println("criminal: " + criminal);
+            System.out.println("criminal id: " + criminal.getId());
+            System.out.println("criminal details: " + criminal.getCriminalDetails());
+            System.out.println("criminal groups: " + criminal.getCrimeGroups());
+            System.out.println("criminal profession: " + criminal.getCriminalProfession());
+            System.out.println("criminal languages: " + criminal.getLanguages());
+            System.out.println("criminal archive: " + criminal.getArchive());
+            System.out.println("BEFORE `addCriminalToGroup`: " + "\n\tcriminalId:" + criminalId + "\n\tnewCrimeGroupName:" + newCrimeGroupName);
+            crimeGroupService.addCriminalToGroup(criminalId, newCrimeGroupName);
+            System.out.println("AFTER `addCriminalToGroup`");
+//            criminalService.addGroup(newGroup); // NOT SO CORRECT
+//            criminal.getCrimeGroups().add(newGroup);// DON'T NEED
+            System.out.println("Crime GROUPS: " + criminal.getCrimeGroups());
+//            System.out.println("Crime group new: " + newGroup.getGroupName() + " | " + newGroup);
+//            System.out.println("Crime group USER: " + newGroup.getMembers());
+            System.out.println("criminal: " + criminal);
+            System.out.println("criminal id: " + criminal.getId());
+            isSuccessCriminal = criminalService.update(criminalId, criminal);// NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
+
+
+            // Update Criminal Details
+//            CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
+//            if(!criminalDetailsDTO.isEmpty()) {
+//                processFormData(criminalDetailsDTO);
+//                if(savedCriminal!=null && savedCriminal.getId() > 0) {
+//                    criminalDetailsDTO.setCriminalId(savedCriminal.getId());
+//                    isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
+//                }
+//            }
+
+            // Prevent duplicates of CriminalDetails
+//            CriminalDetailsDTO currentDetailsOfCriminal = new CriminalDetailsDTO();
+//            currentDetailsOfCriminal.setEyeColor(detailsMap.get(AttributeType.EYE_COLOR));
+//            currentDetailsOfCriminal.setHairColor(detailsMap.get(AttributeType.HAIR_COLOR));
+//            currentDetailsOfCriminal.setHeight(Float.parseFloat(detailsMap.get(AttributeType.HEIGHT)));
+//            currentDetailsOfCriminal.setBirthPlace(detailsMap.get(AttributeType.BIRTH_PLACE));
+//            currentDetailsOfCriminal.setBirthDate(LocalDate.parse(detailsMap.get(AttributeType.BIRTH_DATE), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//            currentDetailsOfCriminal.setLastResidence(detailsMap.get(AttributeType.LAST_RESIDENCE));
+//            currentDetailsOfCriminal.setCitizenship(detailsMap.get(AttributeType.CITIZENSHIP));
+//            processFormDataEmptyValues(currentDetailsOfCriminal);
+//            Optional<Criminal> foundCriminalByAttributes = criminalService.searchCriminalsByAttributes(currentDetailsOfCriminal).stream().filter(e -> e.getId() == criminalId).findFirst();
+            Criminal criminalToCheck =  criminalService.findById(criminalId);
+            Set<CriminalDetails> detailsToCheck = criminalToCheck.getCriminalDetails();
+
+            // Process detailsMap
+            // If some details are present
+            // They should be checked not to duplicate them when insert updated ones
+            if (detailsToCheck.size() > 0) {
+                for (Map.Entry<AttributeType, String> entry : detailsMap.entrySet()) {
+//                String attributeName = entry.getKey();
+                    AttributeType attributeType = entry.getKey();
+                    String attributeValue = entry.getValue();
+
+                    detailsToCheck.stream().filter(d -> d.getAttributeType().equals(attributeType)).findFirst().ifPresent(d -> {
+                        if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
+//                    AttributeType attributeType = AttributeType.valueOf(attributeName);
+                            System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
+                            criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue);
+                        }
+                    });
+                }
+            } else {
+                // If no details were found
+                for (Map.Entry<AttributeType, String> entry : detailsMap.entrySet()) {
+//                String attributeName = entry.getKey();
+                    AttributeType attributeType = entry.getKey();
+                    String attributeValue = entry.getValue();
+                    if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
+//                    AttributeType attributeType = AttributeType.valueOf(attributeName);
+                        System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
+                        isSuccessDetails = criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue);
+                    }
+                }
+        }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/search";
     }
 
     // Delete criminal

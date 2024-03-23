@@ -8,11 +8,14 @@ import org.hibernate.query.TypedParameterValue;
 import org.hibernate.type.StandardBasicTypes;
 import org.project.fin.DTO.CriminalDTO;
 import org.project.fin.DTO.CriminalDetailsDTO;
+import org.project.fin.models.CrimeGroup;
 import org.project.fin.models.Criminal;
+import org.project.fin.repos.CrimeGroupRepository;
 import org.project.fin.repos.CriminalDetailsRepository;
 import org.project.fin.repos.CriminalRepository;
 import org.project.fin.utils.mapper.Mapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Types;
 import java.time.LocalDate;
@@ -28,6 +31,7 @@ public class CriminalService {
 
     private CriminalRepository criminalRepository;
     private CriminalDetailsRepository criminalDetailsRepository;
+    private CrimeGroupRepository crimeGroupRepository;
     private Mapper<Criminal, CriminalDTO> criminalMapper;
 
     @PersistenceContext
@@ -51,25 +55,34 @@ public class CriminalService {
         return savedCriminal;//.getId() > 0
     }
 
+    @Transactional
     public boolean update(long criminalId, Criminal criminal) {
         Optional<Criminal> criminalOpt = criminalRepository.findById(criminalId);
         if(criminalOpt.isEmpty()) {
             return false;
         }
+        // ensure we don't remove relationship between the Criminal and the Language inserted earlier
+//        criminal.setCrimeGroups(criminalOpt.get().getCrimeGroups());
+
+        // prevents DataIntegrityViolationException due to empty ArchiveDate field of HTML form
+        if(criminal.getArchive().getArchiveDate() == null) {
+            criminal.setArchive(null);
+        } else {
+            criminal.getArchive().setCriminal(criminalOpt.get());
+        }
+
         criminalRepository.save(criminal);
         return true;
     }
 
+//    @Transactional
+//    public CrimeGroup addGroup(CrimeGroup crimeGroup) {
+//        Optional<CrimeGroup> foundGroupOpt = crimeGroupRepository.findByGroupNameIgnoreCase(crimeGroup.getGroupName());
+//        return foundGroupOpt.orElseGet(() -> crimeGroupRepository.save(crimeGroup));
+//    }
+
     public void delete(long id) {
         criminalRepository.deleteById(id);
-    }
-
-    private void setParameterWithNullCheck(Query query, String paramName, Object paramValue) {
-        if (paramValue != null) {
-            query.setParameter(paramName, paramValue);
-        } else {
-            query.setParameter(paramName, null);
-        }
     }
 
     public List<Criminal> searchCriminalsByAttributes(CriminalDetailsDTO criminalDetailsDTO) {

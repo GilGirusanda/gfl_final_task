@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -23,10 +24,10 @@ public class Archive {
     private Long id;
 
     @Column(name = "archive_date", nullable = false)
-    private Date archiveDate;
+    private LocalDate archiveDate;
 
     @OneToOne
-    @JoinColumn(name = "criminal_id")
+    @JoinColumn(name = "criminal_id", nullable = false)
     private Criminal criminal;
 
 }
