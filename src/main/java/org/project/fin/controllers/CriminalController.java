@@ -89,35 +89,22 @@ public class CriminalController {
                     .map(criminalCriminalDTOMapper::toEntity)
                     .collect(Collectors.toList());
 
-//            System.out.println("1 branch");
-//            System.out.println("Attrs: " + foundCriminalsByAttrs);
-//            System.out.println("Info: " + foundCriminalsByInfo);
-
             criminals = foundCriminalsByAttrs.stream()
                     .filter(crByAttr -> foundCriminalsByInfo.stream()
                             .anyMatch(crByInfo -> Objects.equals(crByInfo.getId(), crByAttr.getId())))
                     .collect(Collectors.toList());
         } else if(criminalDTO.isEmpty() && !criminalDetailsDTO.isEmpty()) {
-//            System.out.println("2 branch");
-//            System.out.println("criminalDetailsDTO: " + criminalDetailsDTO);
-//            System.out.println("criminalDTO: " + criminalDTO);
             criminals = criminalService.searchCriminalsByAttributes(criminalDetailsDTO);
         } else {
-//            System.out.println("3 branch");
-//            System.out.println("criminalDetailsDTO: " + criminalDetailsDTO);
-//            System.out.println("criminalDTO: " + criminalDTO);
             criminals = criminalService.searchCriminalsByCriminalInfoNotStrict(criminalDTO).stream()
                     .map(criminalCriminalDTOMapper::toEntity)
                     .collect(Collectors.toList());
         }
 
-        System.out.println("isArchived ---> : " + isArchived);
         if(isArchived != null && isArchived) {
             criminals = archiveService.filterArchivedCriminals(criminals, isArchived);
         }
 
-        System.out.println("selectedCrimeGroup ---> : " + selectedCrimeGroup);
-        System.out.println("selectedCrimeGroup (is not Blank) ---> : " + !selectedCrimeGroup.isBlank());
         criminals = crimeGroupService.filterCriminalsByGroup(criminals, selectedCrimeGroup);
 
         model.addAttribute("criminals", criminals);
@@ -135,9 +122,6 @@ public class CriminalController {
         if (dto.getHairColor() != null && dto.getHairColor().isEmpty()) {
             dto.setHairColor(null);
         }
-//        if (dto.getHeight() != null && dto.getHeight().isEmpty()) {
-//            dto.setHeight(null);
-//        }
         if (dto.getBirthPlace() != null && dto.getBirthPlace().isEmpty()) {
             dto.setBirthPlace(null);
         }
@@ -216,11 +200,11 @@ public class CriminalController {
         CriminalDetailsMapForm criminalDetailsMapForm = new CriminalDetailsMapForm();
         criminalDetailsMapForm.setDetailsMap(detailsMap);
         criminalDetailsMapForm.setCriminal(foundCriminal);
-//        model.addAttribute("criminal", foundCriminal);
+
         model.addAttribute("availableLanguages", availableLanguages);
         model.addAttribute("detailsTypes", detailsTypes);
         model.addAttribute("criminalSearchDTO", new CriminalSearchDTO());
-//        model.addAttribute("detailsMap", detailsMap);
+
         model.addAttribute("criminalDetailsMapForm", criminalDetailsMapForm);
         model.addAttribute("newCrimeGroupName", "");
         model.addAttribute("newLanguage", "");
@@ -242,70 +226,14 @@ public class CriminalController {
             Criminal criminal = criminalDetailsMapForm.getCriminal();
             criminal.setId(criminalId);
             languageService.addLanguageToCriminal(criminalId, newLanguage);
-//            System.out.println("newCrimeGroupName ----> : " + newCrimeGroupName);
-//            System.out.println("detailsMap ----> : " + detailsMap);
-//            System.out.println("detailsMap get value ----> : " + detailsMap.get(AttributeType.EYE_COLOR));
-//
-//            System.out.println("detailsMap(keys): "+detailsMap.keySet());
-//            System.out.println("detailsMap(values): "+detailsMap.entrySet());
-
-            boolean isSuccessDetails = false;
-            boolean isSuccessCriminal = false;
 
             // Update Criminal
-//            CriminalDTO criminalDTO = criminalSearchDTO.getCriminalDto();
-//            if(!criminalDTO.isEmpty()) {
-//                Criminal convertedCriminal = criminalCriminalDTOMapper.toEntity(criminalDTO);
-//                boolean isSuccess = criminalService.update(criminalId, convertedCriminal);
-//            }
-
-
-//            System.out.println("Criminal ID:"+ criminalId + "; Criminal:" + criminal);
-//            System.out.println("Criminal DETAILS:" + criminal.getCriminalDetails());
-//            CrimeGroup newGroup = new CrimeGroup(); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
-//            newGroup.setGroupName(newCrimeGroupName); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
-//            newGroup.getMembers().add(criminal); // NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
-            System.out.println("criminal: " + criminal);
-            System.out.println("criminal id: " + criminal.getId());
-            System.out.println("criminal details: " + criminal.getCriminalDetails());
-            System.out.println("criminal groups: " + criminal.getCrimeGroups());
-            System.out.println("criminal profession: " + criminal.getCriminalProfession());
-            System.out.println("criminal languages: " + criminal.getLanguages());
-            System.out.println("criminal archive: " + criminal.getArchive());
-            System.out.println("BEFORE `addCriminalToGroup`: " + "\n\tcriminalId:" + criminalId + "\n\tnewCrimeGroupName:" + newCrimeGroupName);
             crimeGroupService.addCriminalToGroup(criminalId, newCrimeGroupName);
-            System.out.println("AFTER `addCriminalToGroup`");
-//            criminalService.addGroup(newGroup); // NOT SO CORRECT
-//            criminal.getCrimeGroups().add(newGroup);// DON'T NEED
-            System.out.println("Crime GROUPS: " + criminal.getCrimeGroups());
-//            System.out.println("Crime group new: " + newGroup.getGroupName() + " | " + newGroup);
-//            System.out.println("Crime group USER: " + newGroup.getMembers());
-            System.out.println("criminal: " + criminal);
-            System.out.println("criminal id: " + criminal.getId());
-            isSuccessCriminal = criminalService.update(criminalId, criminal);// NO NEED BECAUSE WE HAVE `crimeGroupService.addCriminalToGroup`
+            criminalService.update(criminalId, criminal);
 
 
             // Update Criminal Details
-//            CriminalDetailsDTO criminalDetailsDTO = criminalAddDTO.getCriminalDetailsDto();
-//            if(!criminalDetailsDTO.isEmpty()) {
-//                processFormData(criminalDetailsDTO);
-//                if(savedCriminal!=null && savedCriminal.getId() > 0) {
-//                    criminalDetailsDTO.setCriminalId(savedCriminal.getId());
-//                    isSuccessDetails = criminalDetailsService.save(criminalDetailsDTO);
-//                }
-//            }
-
             // Prevent duplicates of CriminalDetails
-//            CriminalDetailsDTO currentDetailsOfCriminal = new CriminalDetailsDTO();
-//            currentDetailsOfCriminal.setEyeColor(detailsMap.get(AttributeType.EYE_COLOR));
-//            currentDetailsOfCriminal.setHairColor(detailsMap.get(AttributeType.HAIR_COLOR));
-//            currentDetailsOfCriminal.setHeight(Float.parseFloat(detailsMap.get(AttributeType.HEIGHT)));
-//            currentDetailsOfCriminal.setBirthPlace(detailsMap.get(AttributeType.BIRTH_PLACE));
-//            currentDetailsOfCriminal.setBirthDate(LocalDate.parse(detailsMap.get(AttributeType.BIRTH_DATE), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-//            currentDetailsOfCriminal.setLastResidence(detailsMap.get(AttributeType.LAST_RESIDENCE));
-//            currentDetailsOfCriminal.setCitizenship(detailsMap.get(AttributeType.CITIZENSHIP));
-//            processFormDataEmptyValues(currentDetailsOfCriminal);
-//            Optional<Criminal> foundCriminalByAttributes = criminalService.searchCriminalsByAttributes(currentDetailsOfCriminal).stream().filter(e -> e.getId() == criminalId).findFirst();
             Criminal criminalToCheck =  criminalService.findById(criminalId);
             Set<CriminalDetails> detailsToCheck = criminalToCheck.getCriminalDetails();
 
@@ -313,7 +241,6 @@ public class CriminalController {
             // If some details are present
             // They should be checked not to duplicate them when insert updated ones
             if (detailsToCheck.size() > 0) {
-                System.out.println("detailsToCheck.size() > 0 : " + Boolean.toString(detailsToCheck.size() > 0) + " size: "+ detailsToCheck.size());
                 for (Map.Entry<AttributeType, String> entry : detailsMap.entrySet()) {
                     AttributeType attributeType = entry.getKey();
                     String attributeValue = entry.getValue();
@@ -323,11 +250,9 @@ public class CriminalController {
                     if (foundExistingDetails.isPresent()) {
                         String existingAttributeValue = foundExistingDetails.get().getAttributeValue();
                         if(!existingAttributeValue.equals(attributeValue)) {
-                            System.out.println("Are not equal - then UPDATE");
                             updateCriminalDetails(criminalId, attributeType, attributeValue, foundExistingDetails.get().getId());
                         }
                     } else {
-                        System.out.println("IS NOT PRESENT - THEN ADD NEW");
                         updateCriminalDetails(criminalId, attributeType, attributeValue, null);
                     }
                 }
@@ -348,15 +273,8 @@ public class CriminalController {
 
     private void updateCriminalDetails(Long criminalId, AttributeType attributeType, String attributeValue, Long attributeIdToUpdate) {
         if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
-            System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
             criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue, attributeIdToUpdate);
         }
     }
 
-    // Delete criminal
-    @PostMapping("/criminal/{id}/delete")
-    public String deleteCriminal(@PathVariable Long id) {
-        criminalService.delete(id);
-        return "redirect:/";
-    }
 }

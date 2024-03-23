@@ -51,19 +51,11 @@ public class CriminalDetailsMapperImpl implements CriminalDetailsMapper {
                         dto.setCitizenship(detail.getAttributeValue());
                         break;
                     default:
-                        // Handle unknown attribute type
+                        // handle unknown attribute type
                         break;
                 }
             }
         }
-//        dto.setCriminalId();
-//        dto.setEyeColor();
-//        dto.setHairColor();
-//        dto.setHeight();
-//        dto.setBirthPlace();
-//        dto.setBirthDate();
-//        dto.setLastResidence();
-//        dto.setCitizenship();
         return dto;
     }
 

@@ -72,7 +72,7 @@ public class CriminalDetails {
 
     @Column(name = "attribute_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private AttributeType attributeType; // e.g., height, hair color, etc.
+    private AttributeType attributeType; // height, hair color, etc.
 
     @Column(name = "attribute_value", nullable = false)
     private String attributeValue;

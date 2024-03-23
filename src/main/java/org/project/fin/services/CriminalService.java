@@ -58,7 +58,7 @@ public class CriminalService {
             criminal.setLastName(null);
         }
         Criminal savedCriminal = criminalRepository.save(criminal);
-        return savedCriminal;//.getId() > 0
+        return savedCriminal;
     }
 
     @Transactional
@@ -67,8 +67,6 @@ public class CriminalService {
         if(criminalOpt.isEmpty()) {
             return false;
         }
-        // ensure we don't remove relationship between the Criminal and the Language inserted earlier
-//        criminal.setCrimeGroups(criminalOpt.get().getCrimeGroups());
 
         // prevents DataIntegrityViolationException due to empty ArchiveDate field of HTML form
         if(criminal.getArchive().getArchiveDate() == null) {
@@ -79,16 +77,6 @@ public class CriminalService {
 
         criminalRepository.save(criminal);
         return true;
-    }
-
-//    @Transactional
-//    public CrimeGroup addGroup(CrimeGroup crimeGroup) {
-//        Optional<CrimeGroup> foundGroupOpt = crimeGroupRepository.findByGroupNameIgnoreCase(crimeGroup.getGroupName());
-//        return foundGroupOpt.orElseGet(() -> crimeGroupRepository.save(crimeGroup));
-//    }
-
-    public void delete(long id) {
-        criminalRepository.deleteById(id);
     }
 
     public List<Criminal> searchCriminalsByAttributes(CriminalDetailsDTO criminalDetailsDTO) {
@@ -122,7 +110,6 @@ public class CriminalService {
     }
 
     public List<CriminalDTO> searchCriminalsByCriminalInfoNotStrict(CriminalDTO criminalDTO) {
-//        String criminalProfession = criminalDTO.getCriminalProfession() != null ? criminalDTO.getCriminalProfession().toString() : null;
         List<CriminalDTO> filteredCriminals = criminalRepository.findCriminalsByCriminalInfoNotStrict(
                 criminalDTO.getFirstName() != null ? criminalDTO.getFirstName() : "",
                 criminalDTO.getLastName() != null ? criminalDTO.getLastName() : "",

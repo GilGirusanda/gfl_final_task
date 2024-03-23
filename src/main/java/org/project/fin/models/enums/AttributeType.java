@@ -9,8 +9,3 @@ public enum AttributeType {
     LAST_RESIDENCE,
     CITIZENSHIP
 }
-
-// LANGUAGES - ManyToMany
-// Archive - OneToOne (conditional)
-// LAST CASE
-// CRIMINAL PROFESSION

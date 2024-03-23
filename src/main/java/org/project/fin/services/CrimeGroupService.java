@@ -40,13 +40,11 @@ public class CrimeGroupService {
                     return newSavedGroup;
                 });
 
-//        criminal.getCrimeGroups().add(group);
         if(!isNew[0]) {
             group.getMembers().add(criminal);
         }
 
         crimeGroupRepository.save(group);
-//        criminalRepository.save(criminal);
     }
 
     public List<Criminal> filterCriminalsByGroup(List<Criminal> criminals, String groupName) {

@@ -42,6 +42,4 @@ public interface CriminalRepository extends JpaRepository<Criminal, Long> {
                                                   @Param("nickname") String nickname,
                                                   @Param("criminalProfession") CriminalProfession criminalProfession);
 
-//    @Query("SELECT c FROM Criminal c LEFT JOIN FETCH c.archive WHERE c.id = :id")
-//    Optional<Criminal> findByIdWithArchive(@Param("id") Long id);
 }
