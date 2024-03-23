@@ -10,11 +10,13 @@
 3. Перенесення тих що «зав’язали» в архів; видалення - тільки після смерті.
     3.1. Make an archive page with a list of archived criminals
     3.2. Add on the main page a button "Add to Archive" for each criminal in the table.
+(done)
 
 4. Form to add new criminal and criminal details.
 (done)
 
 5. Form to update a criminal and criminal details (same page as See criminal details, just add input fields and a submit button).
+(done)
 
             <p class="card-text fs-4"><strong>Criminal Details:</strong>
                 <span th:if="${criminal.criminalDetails.size() > 0}">

@@ -15,6 +15,7 @@ import org.project.fin.utils.mapper.criminal.CriminalMapperImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.*;
+import org.w3c.dom.Attr;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -297,30 +298,30 @@ public class CriminalController {
             // If some details are present
             // They should be checked not to duplicate them when insert updated ones
             if (detailsToCheck.size() > 0) {
+                System.out.println("detailsToCheck.size() > 0 : " + Boolean.toString(detailsToCheck.size() > 0) + " size: "+ detailsToCheck.size());
                 for (Map.Entry<AttributeType, String> entry : detailsMap.entrySet()) {
-//                String attributeName = entry.getKey();
                     AttributeType attributeType = entry.getKey();
                     String attributeValue = entry.getValue();
 
-                    detailsToCheck.stream().filter(d -> d.getAttributeType().equals(attributeType)).findFirst().ifPresent(d -> {
-                        if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
-//                    AttributeType attributeType = AttributeType.valueOf(attributeName);
-                            System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
-                            criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue);
+                    Optional<CriminalDetails> foundExistingDetails = detailsToCheck.stream().filter(d -> d.getAttributeType().equals(attributeType)).findFirst();
+
+                    if (foundExistingDetails.isPresent()) {
+                        String existingAttributeValue = foundExistingDetails.get().getAttributeValue();
+                        if(!existingAttributeValue.equals(attributeValue)) {
+                            System.out.println("Are not equal - then UPDATE");
+                            updateCriminalDetails(criminalId, attributeType, attributeValue, foundExistingDetails.get().getId());
                         }
-                    });
+                    } else {
+                        System.out.println("IS NOT PRESENT - THEN ADD NEW");
+                        updateCriminalDetails(criminalId, attributeType, attributeValue, null);
+                    }
                 }
             } else {
                 // If no details were found
                 for (Map.Entry<AttributeType, String> entry : detailsMap.entrySet()) {
-//                String attributeName = entry.getKey();
                     AttributeType attributeType = entry.getKey();
                     String attributeValue = entry.getValue();
-                    if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
-//                    AttributeType attributeType = AttributeType.valueOf(attributeName);
-                        System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
-                        isSuccessDetails = criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue);
-                    }
+                    updateCriminalDetails(criminalId, attributeType, attributeValue, null);
                 }
         }
 
@@ -328,6 +329,13 @@ public class CriminalController {
             e.printStackTrace();
         }
         return "redirect:/search";
+    }
+
+    private void updateCriminalDetails(Long criminalId, AttributeType attributeType, String attributeValue, Long attributeIdToUpdate) {
+        if (attributeValue != null && !attributeValue.isBlank() && !attributeValue.isEmpty()) {
+            System.out.println(String.format("criminalId=%s, attributeType=%s, attributeValue=%s", criminalId, attributeType, attributeValue));
+            criminalDetailsService.updateEntity(criminalId, attributeType, attributeValue, attributeIdToUpdate);
+        }
     }
 
     // Delete criminal

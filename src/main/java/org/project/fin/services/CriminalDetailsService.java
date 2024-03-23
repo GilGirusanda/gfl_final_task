@@ -40,12 +40,12 @@ public class CriminalDetailsService {
     }
 
     @Transactional
-    public boolean updateEntity(Long criminalId, AttributeType attributeType, String attributeValue) {
+    public boolean updateEntity(Long criminalId, AttributeType attributeType, String attributeValue, Long attributeIdToUpdate) {
         Optional<Criminal> criminalOpt = criminalRepository.findById(criminalId);
 
         if(criminalOpt.isEmpty()) return false;
 
-        criminalOpt.ifPresent(criminal -> criminalDetailsRepository.save(new CriminalDetails(null, attributeType, attributeValue, criminal)));
+        criminalOpt.ifPresent(criminal -> criminalDetailsRepository.save(new CriminalDetails(attributeIdToUpdate, attributeType, attributeValue, criminal)));
         return true;
     }
 }
