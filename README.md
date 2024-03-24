@@ -9,3 +9,8 @@
 <br>
 Use intellij idea or<br>
 Execute `mvnw clean install` and then `mvnw spring-boot:run` commands in console to run the app.
+
+## Using
+- For filtering there is no need to enter full string (for example, just enter 'r' if you don't want to enter full string 'Russo')
+- All fields are changable. Some of them are just set with default values like 'Unknown' for Firstname, or 'Few details' for Last Case
+- Not all of the fields have to be entered. Some of them can be empty, except for Nickname and Criminal Profession
