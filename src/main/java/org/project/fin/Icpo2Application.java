@@ -21,15 +21,17 @@ public class Icpo2Application {
     public CommandLineRunner cmd(LanguageService languageService){
         return args -> {
             // Fill `languages` table with test values
-            languageService.save(new Language(null, "Ukrainian", null));
-            languageService.save(new Language(null, "English(UK)", null));
-            languageService.save(new Language(null, "English(USA)", null));
-            languageService.save(new Language(null, "French", null));
-            languageService.save(new Language(null, "German", null));
-            languageService.save(new Language(null, "Italian", null));
-            languageService.save(new Language(null, "Portuguese", null));
-            languageService.save(new Language(null, "Sweden", null));
-            languageService.save(new Language(null, "Canadian", null));
+            if(languageService.findAll().isEmpty()){
+                languageService.save(new Language(null, "Ukrainian", null));
+                languageService.save(new Language(null, "English(UK)", null));
+                languageService.save(new Language(null, "English(USA)", null));
+                languageService.save(new Language(null, "French", null));
+                languageService.save(new Language(null, "German", null));
+                languageService.save(new Language(null, "Italian", null));
+                languageService.save(new Language(null, "Portuguese", null));
+                languageService.save(new Language(null, "Sweden", null));
+                languageService.save(new Language(null, "Canadian", null));
+            }
         };
     }
 
